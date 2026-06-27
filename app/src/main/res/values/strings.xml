@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AIWrite</string>
+    <string name="tab_creative_hub">创作</string>
+    <string name="tab_novels">小说</string>
+    <string name="tab_world">世界</string>
+    <string name="tab_image_gen">图生</string>
+    <string name="tab_settings">设置</string>
+</resources>
