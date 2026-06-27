@@ -5,11 +5,13 @@ import androidx.room.RoomDatabase
 import com.aiwrite.data.local.dao.ChapterDao
 import com.aiwrite.data.local.dao.CharacterProfileDao
 import com.aiwrite.data.local.dao.NovelDao
+import com.aiwrite.data.local.dao.StyleProfileDao
 import com.aiwrite.data.local.dao.VolumeDao
 import com.aiwrite.data.local.dao.WorldSettingDao
 import com.aiwrite.data.local.entity.ChapterEntity
 import com.aiwrite.data.local.entity.CharacterProfileEntity
 import com.aiwrite.data.local.entity.NovelEntity
+import com.aiwrite.data.local.entity.StyleProfileEntity
 import com.aiwrite.data.local.entity.VolumeEntity
 import com.aiwrite.data.local.entity.WorldSettingEntity
 
@@ -19,9 +21,10 @@ import com.aiwrite.data.local.entity.WorldSettingEntity
         VolumeEntity::class,
         ChapterEntity::class,
         WorldSettingEntity::class,
-        CharacterProfileEntity::class
+        CharacterProfileEntity::class,
+        StyleProfileEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -30,4 +33,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun chapterDao(): ChapterDao
     abstract fun worldSettingDao(): WorldSettingDao
     abstract fun characterProfileDao(): CharacterProfileDao
+    abstract fun styleProfileDao(): StyleProfileDao
 }

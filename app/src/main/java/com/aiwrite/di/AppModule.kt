@@ -6,6 +6,7 @@ import com.aiwrite.data.local.AppDatabase
 import com.aiwrite.data.local.dao.ChapterDao
 import com.aiwrite.data.local.dao.CharacterProfileDao
 import com.aiwrite.data.local.dao.NovelDao
+import com.aiwrite.data.local.dao.StyleProfileDao
 import com.aiwrite.data.local.dao.VolumeDao
 import com.aiwrite.data.local.dao.WorldSettingDao
 import dagger.Module
@@ -44,4 +45,7 @@ object AppModule {
 
     @Provides
     fun provideCharacterProfileDao(db: AppDatabase): CharacterProfileDao = db.characterProfileDao()
+
+    @Provides
+    fun provideStyleProfileDao(db: AppDatabase): StyleProfileDao = db.styleProfileDao()
 }

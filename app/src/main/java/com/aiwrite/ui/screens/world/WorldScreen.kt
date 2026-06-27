@@ -24,15 +24,27 @@ import com.aiwrite.data.repository.WorldRepository
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorldScreen(
-    viewModel: WorldViewModel = hiltViewModel()
+    viewModel: WorldViewModel = hiltViewModel(),
+    styleViewModel: StyleViewModel = hiltViewModel()
 ) {
     val novels by viewModel.novels.collectAsState()
     val selectedNovel by viewModel.selectedNovel.collectAsState()
+    val selectedNovelId = viewModel.novels.collectAsState().value
+        .find { it.id == selectedNovel?.id }?.id
     val worldSettings by viewModel.worldSettings.collectAsState()
     val characters by viewModel.characters.collectAsState()
+    val styleProfiles by styleViewModel.profiles.collectAsState()
+
+    LaunchedEffect(selectedNovel?.id) {
+        styleViewModel.setNovelId(selectedNovel?.id)
+    }
 
     var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("世界观" to Icons.Filled.Public, "角色" to Icons.Filled.Person)
+    val tabs = listOf(
+        "世界观" to Icons.Filled.Public,
+        "角色" to Icons.Filled.Person,
+        "写法" to Icons.Filled.Style
+    )
 
     Scaffold(
         topBar = {
@@ -92,6 +104,16 @@ fun WorldScreen(
                         onCreate = { name, role -> viewModel.createCharacter(name, role) },
                         onUpdate = { viewModel.updateCharacter(it) },
                         onDelete = { viewModel.deleteCharacter(it) }
+                    )
+                    2 -> StylePanel(
+                        profiles = styleProfiles,
+                        onCreateProfile = { name, desc -> styleViewModel.createProfile(name, desc) },
+                        onDeleteProfile = { styleViewModel.deleteProfile(it) },
+                        onSetActive = { styleViewModel.setActive(it) },
+                        onAddFeature = { profile, feature -> styleViewModel.addFeature(profile, feature) },
+                        onToggleFeature = { profile, featureId, enabled ->
+                            styleViewModel.toggleFeature(profile, featureId, enabled)
+                        }
                     )
                 }
             }
