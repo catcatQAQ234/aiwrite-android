@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.aiwrite.data.local.AppDatabase
 import com.aiwrite.data.local.dao.ChapterDao
+import com.aiwrite.data.local.dao.CharacterProfileDao
 import com.aiwrite.data.local.dao.NovelDao
 import com.aiwrite.data.local.dao.VolumeDao
+import com.aiwrite.data.local.dao.WorldSettingDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +26,8 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "aiwrite.db"
-        ).build()
+        ).fallbackToDestructiveMigration()
+         .build()
     }
 
     @Provides
@@ -35,4 +38,10 @@ object AppModule {
 
     @Provides
     fun provideChapterDao(db: AppDatabase): ChapterDao = db.chapterDao()
+
+    @Provides
+    fun provideWorldSettingDao(db: AppDatabase): WorldSettingDao = db.worldSettingDao()
+
+    @Provides
+    fun provideCharacterProfileDao(db: AppDatabase): CharacterProfileDao = db.characterProfileDao()
 }
