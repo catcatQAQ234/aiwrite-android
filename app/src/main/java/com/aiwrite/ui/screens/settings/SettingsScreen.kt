@@ -20,7 +20,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    localLlmViewModel: LocalLlmViewModel = hiltViewModel()
 ) {
     val config by viewModel.config.collectAsState()
 
@@ -169,6 +170,26 @@ fun SettingsScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+
+            // Local LLM
+            val llmConfig by localLlmViewModel.config.collectAsState()
+            val downloadProgress by localLlmViewModel.downloadProgress.collectAsState()
+            val downloadedModels by localLlmViewModel.downloadedModels.collectAsState()
+            val engineStatus by localLlmViewModel.engineStatus.collectAsState()
+
+            LocalLlmPanel(
+                config = llmConfig,
+                downloadProgress = downloadProgress,
+                downloadedModels = downloadedModels,
+                engineStatus = engineStatus,
+                onToggleEnabled = { localLlmViewModel.toggleEnabled(it) },
+                onDownloadModel = { localLlmViewModel.downloadModel(it) },
+                onSelectModel = { localLlmViewModel.selectModel(it) },
+                onInitialize = { localLlmViewModel.initializeEngine() }
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

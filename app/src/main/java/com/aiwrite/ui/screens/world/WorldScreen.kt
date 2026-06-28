@@ -33,17 +33,25 @@ fun WorldScreen(
         .find { it.id == selectedNovel?.id }?.id
     val worldSettings by viewModel.worldSettings.collectAsState()
     val characters by viewModel.characters.collectAsState()
+    val ragViewModel: RagViewModel = hiltViewModel()
     val styleProfiles by styleViewModel.profiles.collectAsState()
+    val ragItems by ragViewModel.items.collectAsState()
+    val ragSearchQuery by ragViewModel.searchQuery.collectAsState()
+    val ragSearchResults by ragViewModel.searchResults.collectAsState()
+    val ragIsSearching by ragViewModel.isSearching.collectAsState()
+    val ragSemanticResults by ragViewModel.lastSemanticResults.collectAsState()
 
     LaunchedEffect(selectedNovel?.id) {
         styleViewModel.setNovelId(selectedNovel?.id)
+        ragViewModel.setNovelId(selectedNovel?.id)
     }
 
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf(
         "世界观" to Icons.Filled.Public,
         "角色" to Icons.Filled.Person,
-        "写法" to Icons.Filled.Style
+        "写法" to Icons.Filled.Style,
+        "知识库" to Icons.Filled.MenuBook
     )
 
     Scaffold(
@@ -114,6 +122,18 @@ fun WorldScreen(
                         onToggleFeature = { profile, featureId, enabled ->
                             styleViewModel.toggleFeature(profile, featureId, enabled)
                         }
+                    )
+                    3 -> RagPanel(
+                        items = ragItems,
+                        searchQuery = ragSearchQuery,
+                        searchResults = ragSearchResults,
+                        isSearching = ragIsSearching,
+                        lastSemanticResults = ragSemanticResults,
+                        onCreateItem = { title, content, source -> ragViewModel.createItem(title, content, source) },
+                        onImportText = { title, text -> ragViewModel.importText(title, text) },
+                        onDelete = { ragViewModel.deleteItem(it) },
+                        onSearch = { ragViewModel.search(it) },
+                        onSemanticSearch = { ragViewModel.semanticSearch(it) }
                     )
                 }
             }

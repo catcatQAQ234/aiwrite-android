@@ -6,6 +6,7 @@ import com.aiwrite.data.local.AppDatabase
 import com.aiwrite.data.local.dao.ChapterDao
 import com.aiwrite.data.local.dao.CharacterProfileDao
 import com.aiwrite.data.local.dao.GenerationHistoryDao
+import com.aiwrite.data.local.dao.KnowledgeItemDao
 import com.aiwrite.data.local.dao.NovelDao
 import com.aiwrite.data.local.dao.StyleProfileDao
 import com.aiwrite.data.local.dao.VolumeDao
@@ -52,4 +53,7 @@ object AppModule {
 
     @Provides
     fun provideGenerationHistoryDao(db: AppDatabase): GenerationHistoryDao = db.generationHistoryDao()
+
+    @Provides
+    fun provideKnowledgeItemDao(db: AppDatabase): KnowledgeItemDao = db.knowledgeItemDao()
 }
