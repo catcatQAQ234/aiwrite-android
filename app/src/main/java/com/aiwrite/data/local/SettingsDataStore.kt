@@ -29,6 +29,26 @@ class SettingsDataStore @Inject constructor(
         val REVIEW_MODEL = stringPreferencesKey("review_model")
         val MAX_TOKENS = intPreferencesKey("max_tokens")
         val TEMPERATURE = floatPreferencesKey("temperature")
+        val SELECTED_NOVEL_ID = stringPreferencesKey("selected_novel_id")
+        val SELECTED_NOVEL_TITLE = stringPreferencesKey("selected_novel_title")
+    }
+
+    // Current novel context
+    val selectedNovelId: Flow<String?> = context.dataStore.data.map { it[Keys.SELECTED_NOVEL_ID] }
+    val selectedNovelTitle: Flow<String?> = context.dataStore.data.map { it[Keys.SELECTED_NOVEL_TITLE] }
+
+    suspend fun setSelectedNovel(id: String, title: String) {
+        context.dataStore.edit {
+            it[Keys.SELECTED_NOVEL_ID] = id
+            it[Keys.SELECTED_NOVEL_TITLE] = title
+        }
+    }
+
+    suspend fun clearSelectedNovel() {
+        context.dataStore.edit {
+            it.remove(Keys.SELECTED_NOVEL_ID)
+            it.remove(Keys.SELECTED_NOVEL_TITLE)
+        }
     }
 
     val apiConfig: Flow<ApiConfig> = context.dataStore.data.map { prefs ->

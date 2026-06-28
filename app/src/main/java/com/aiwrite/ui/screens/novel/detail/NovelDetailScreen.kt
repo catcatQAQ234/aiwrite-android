@@ -17,9 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.collectAsState
 import com.aiwrite.data.local.entity.ChapterEntity
+import com.aiwrite.data.local.entity.VolumeEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +34,9 @@ fun NovelDetailScreen(
     val volumes by viewModel.volumes.collectAsState()
     var showCreateVolume by remember { mutableStateOf(false) }
     var expandedVolumes by remember { mutableStateOf(setOf<String>()) }
+    var deleteTarget by remember { mutableStateOf<Any?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -56,6 +60,7 @@ fun NovelDetailScreen(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = { showCreateVolume = true }) {
                 Icon(Icons.Filled.Add, contentDescription = "新建卷")
@@ -95,17 +100,42 @@ fun NovelDetailScreen(
                                 expandedVolumes + volume.id
                             }
                         },
-                        onDeleteVolume = { viewModel.deleteVolume(volume) },
+                        onDeleteVolume = { deleteTarget = volume },
                         onChapterClick = onChapterClick,
                         onCreateChapter = { title ->
                             viewModel.createChapter(volume.id, title)
                         },
-                        onDeleteChapter = { viewModel.deleteChapter(it) },
+                        onDeleteChapter = { deleteTarget = it },
                         chaptersFlow = viewModel.getChapters(volume.id)
                     )
                 }
             }
         }
+    }
+
+    // Delete confirmation
+    deleteTarget?.let { target ->
+        val name = when (target) {
+            is VolumeEntity -> target.title
+            is ChapterEntity -> target.title
+            else -> ""
+        }
+        AlertDialog(
+            onDismissRequest = { deleteTarget = null },
+            title = { Text("确认删除") },
+            text = { Text("确定要删除「$name」吗？此操作不可撤销。") },
+            confirmButton = {
+                TextButton(onClick = {
+                    when (target) {
+                        is VolumeEntity -> viewModel.deleteVolume(target)
+                        is ChapterEntity -> viewModel.deleteChapter(target)
+                    }
+                    scope.launch { snackbarHostState.showSnackbar("已删除「$name」") }
+                    deleteTarget = null
+                }) { Text("删除", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = { TextButton(onClick = { deleteTarget = null }) { Text("取消") } }
+        )
     }
 
     if (showCreateVolume) {

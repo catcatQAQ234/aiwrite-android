@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,9 @@ fun NovelListScreen(
 ) {
     val novels by viewModel.novels.collectAsState()
     var showCreateDialog by remember { mutableStateOf(false) }
+    var deleteTarget by remember { mutableStateOf<com.aiwrite.data.local.entity.NovelEntity?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -39,6 +43,7 @@ fun NovelListScreen(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = { showCreateDialog = true }) {
                 Icon(Icons.Filled.Add, contentDescription = "创建小说")
@@ -83,11 +88,28 @@ fun NovelListScreen(
                     NovelCard(
                         novel = novel,
                         onClick = { onNovelClick(novel.id) },
-                        onDelete = { viewModel.deleteNovel(novel) }
+                        onDelete = { deleteTarget = novel }
                     )
                 }
             }
         }
+    }
+
+    // Delete confirmation
+    deleteTarget?.let { novel ->
+        AlertDialog(
+            onDismissRequest = { deleteTarget = null },
+            title = { Text("确认删除") },
+            text = { Text("确定要删除《${novel.title}》吗？\n所有卷、章节、世界观、角色将被永久删除。") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteNovel(novel)
+                    scope.launch { snackbarHostState.showSnackbar("已删除《${novel.title}》") }
+                    deleteTarget = null
+                }) { Text("删除", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = { TextButton(onClick = { deleteTarget = null }) { Text("取消") } }
+        )
     }
 
     if (showCreateDialog) {
