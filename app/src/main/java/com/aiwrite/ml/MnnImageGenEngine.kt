@@ -61,7 +61,7 @@ class MnnImageGenEngine @Inject constructor(
 
             isLoaded
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("MnnImageGen", "Failed to initialize engine", e)
             false
         }
     }

@@ -52,9 +52,11 @@ class SettingsDataStore @Inject constructor(
     }
 
     val apiConfig: Flow<ApiConfig> = context.dataStore.data.map { prefs ->
+        val encryptedKey = prefs[Keys.API_KEY] ?: ""
+        val decryptedKey = if (encryptedKey.isNotBlank()) KeyEncryption.decrypt(encryptedKey) ?: "" else ""
         ApiConfig(
             baseUrl = prefs[Keys.BASE_URL] ?: "https://api.openai.com",
-            apiKey = prefs[Keys.API_KEY] ?: "",
+            apiKey = decryptedKey,
             planningModel = prefs[Keys.PLANNING_MODEL] ?: "gpt-4o",
             writingModel = prefs[Keys.WRITING_MODEL] ?: "gpt-4o",
             reviewModel = prefs[Keys.REVIEW_MODEL] ?: "gpt-4o-mini",
@@ -68,7 +70,8 @@ class SettingsDataStore @Inject constructor(
     }
 
     suspend fun updateApiKey(key: String) {
-        context.dataStore.edit { it[Keys.API_KEY] = key }
+        val encrypted = if (key.isNotBlank()) KeyEncryption.encrypt(key) ?: key else ""
+        context.dataStore.edit { it[Keys.API_KEY] = encrypted }
     }
 
     suspend fun updatePlanningModel(model: String) {

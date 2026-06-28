@@ -32,9 +32,14 @@ class ImageRepository @Inject constructor(
         historyDao.update(item.copy(favorite = !item.favorite))
     }
 
+    private fun isPathSafe(path: String): Boolean {
+        val appDir = context.filesDir.canonicalPath
+        val target = File(path).canonicalFile
+        return target.path.startsWith(appDir)
+    }
+
     suspend fun deleteHistory(item: GenerationHistoryEntity) {
-        // Delete the image file
-        if (item.imagePath.isNotBlank()) {
+        if (item.imagePath.isNotBlank() && isPathSafe(item.imagePath)) {
             File(item.imagePath).delete()
         }
         historyDao.delete(item)
