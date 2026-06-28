@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.aiwrite.data.local.AppDatabase
 import com.aiwrite.data.local.dao.ChapterDao
 import com.aiwrite.data.local.dao.CharacterProfileDao
+import com.aiwrite.data.local.dao.GenerationHistoryDao
 import com.aiwrite.data.local.dao.NovelDao
 import com.aiwrite.data.local.dao.StyleProfileDao
 import com.aiwrite.data.local.dao.VolumeDao
@@ -48,4 +49,7 @@ object AppModule {
 
     @Provides
     fun provideStyleProfileDao(db: AppDatabase): StyleProfileDao = db.styleProfileDao()
+
+    @Provides
+    fun provideGenerationHistoryDao(db: AppDatabase): GenerationHistoryDao = db.generationHistoryDao()
 }

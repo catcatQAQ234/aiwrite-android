@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 fun NovelDetailScreen(
     onBack: () -> Unit,
     onChapterClick: (String) -> Unit,
+    onPipelineClick: (String) -> Unit = {},
     viewModel: NovelDetailViewModel = hiltViewModel()
 ) {
     val novel by viewModel.novel.collectAsState()
@@ -39,6 +41,13 @@ fun NovelDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")
+                    }
+                },
+                actions = {
+                    novel?.let { n ->
+                        IconButton(onClick = { onPipelineClick(n.id) }) {
+                            Icon(Icons.Filled.AutoAwesome, "整本生产")
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

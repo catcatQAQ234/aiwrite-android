@@ -33,6 +33,7 @@ import com.aiwrite.ui.screens.creativehub.CreativeHubScreen
 import com.aiwrite.ui.screens.imagegen.ImageGenScreen
 import com.aiwrite.ui.screens.novel.NovelListScreen
 import com.aiwrite.ui.screens.novel.detail.NovelDetailScreen
+import com.aiwrite.ui.screens.novel.detail.PipelineScreen
 import com.aiwrite.ui.screens.novel.editor.ChapterEditorScreen
 import com.aiwrite.ui.screens.settings.SettingsScreen
 import com.aiwrite.ui.screens.world.WorldScreen
@@ -53,9 +54,11 @@ sealed class Screen(
 object Routes {
     const val NOVEL_DETAIL = "novel_detail/{novelId}"
     const val CHAPTER_EDITOR = "chapter_editor/{chapterId}"
+    const val PIPELINE = "pipeline/{novelId}"
 
     fun novelDetail(novelId: String) = "novel_detail/$novelId"
     fun chapterEditor(chapterId: String) = "chapter_editor/$chapterId"
+    fun pipeline(novelId: String) = "pipeline/$novelId"
 }
 
 val bottomNavItems = listOf(
@@ -131,6 +134,9 @@ fun AiWriteNavHost() {
                     onBack = { navController.popBackStack() },
                     onChapterClick = { chapterId ->
                         navController.navigate(Routes.chapterEditor(chapterId))
+                    },
+                    onPipelineClick = { novelId ->
+                        navController.navigate(Routes.pipeline(novelId))
                     }
                 )
             }
@@ -139,6 +145,14 @@ fun AiWriteNavHost() {
                 arguments = listOf(navArgument("chapterId") { type = NavType.StringType })
             ) {
                 ChapterEditorScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(
+                route = Routes.PIPELINE,
+                arguments = listOf(navArgument("novelId") { type = NavType.StringType })
+            ) {
+                PipelineScreen(
                     onBack = { navController.popBackStack() }
                 )
             }
